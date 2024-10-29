@@ -1,0 +1,92 @@
+<section class="min-h-screen bg-gradient-to-br from-green-200 via-blue-200 to-pink-200 flex items-center justify-center p-4">
+  <div class="w-full max-w-4xl flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden">
+    
+    <!-- Formulario de inicio de sesión -->
+    <div class="w-full md:w-1/2 p-8">
+      <!-- Título y subtítulo -->
+      <div class="text-2xl font-bold mb-4 text-gray-800">ARmony</div>
+      <h1 class="text-4xl font-bold mb-6 text-gray-900">Iniciar sesión</h1>
+
+     
+     
+      <!-- Formulario de campos -->
+      <form class="space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+        
+        <!-- Correo electrónico -->
+        <div>
+          <label for="email" class="text-sm font-medium text-gray-700">Correo electrónico</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="mt-1 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5"
+            placeholder="usuario@ejemplo.com"
+          />
+          <!-- Mensaje de error de validación -->
+          <small *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-red-400">
+            {{ form.get('email')?.hasError('required') ? 'El campo es requerido' : '' }}
+            {{ form.get('email')?.hasError('email') ? 'Debe ser un correo válido' : '' }}
+          </small>
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label for="password" class="text-sm font-medium text-gray-700">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="mt-1 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5"
+            placeholder="••••••••"
+          />
+          <!-- Mensaje de error de validación -->
+          <small *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-red-400">
+            {{ form.get('password')?.hasError('required') ? 'El campo es requerido' : '' }}
+          </small>
+        </div>
+
+        <!-- Enlace de olvido de contraseña -->
+        <div class="text-right">
+          <a href="#" class="text-sm text-blue-600 hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <!-- Botón de inicio de sesión -->
+        <button
+          type="submit"
+          class="w-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white p-2.5 rounded-lg"
+        >
+          Iniciar sesión
+        </button>
+      </form>
+
+      <!-- Separador con texto -->
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">O continuar con</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón de inicio de sesión con Google -->
+      <div class="mt-6 flex justify-center gap-4">
+        <app-google-button (onClick)="submitWithGoogle()" />
+      </div>
+
+      <!-- Mensaje de redirección a registro -->
+      <p class="mt-8 text-center text-sm text-gray-600">
+        ¿Aún no tienes una cuenta? 
+        <a routerLink="/auth/sign-up" class="font-medium text-blue-600 hover:underline">Crea tu cuenta</a>
+      </p>
+    </div>
+
+   <!-- Imagen decorativa -->
+   <div class="w-full md:w-1/2 bg-gradient-to-br from-green-100 via-blue-100 to-pink-100 flex items-end justify-center">
+    <img src="/imagenes/mono1.png" alt="Ilustración decorativa" class="w-full h-full object-cover" />
+  </div>
+
+  </div>
+</section>
