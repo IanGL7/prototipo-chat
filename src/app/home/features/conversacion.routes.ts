@@ -1,9 +1,8 @@
-import { Routes } from "@angular/router";
+import { Routes } from '@angular/router';
 
 export default [
-    {
-        path: '',
-        loadComponent: () => import('./conversacion/conversacion.component')
-    },
-
-]as Routes;
+  {
+    path: '',
+    loadComponent: () => import('./conversacion/conversacion.component').then(m => m.ConversacionComponent)
+  }
+] as Routes;

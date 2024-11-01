@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MenuLateralComponent } from '../../../shared/menu-lateral/menu-lateral.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-conversacion',
   standalone: true,
-  imports: [],
-  templateUrl: './conversacion.component.html',
-  styles: ``
+  imports: [CommonModule, RouterModule, MenuLateralComponent],
+  templateUrl: './conversacion.component.html'
 })
-export default class ConversacionComponent {
+export class ConversacionComponent implements OnInit {
+  constructor() {}
 
+  ngOnInit(): void {
+    // Inicialización necesaria para el componente de conversación
+  }
 }
