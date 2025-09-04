@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import * as THREE from 'three';
 
 declare var SelfieSegmentation: any;
@@ -40,23 +41,34 @@ export class ArViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   private unlockAudioBound?: () => void;
   public hideEnableButton = false; // para ocultar botón tras habilitar sonido
 
-  constructor(private location: Location) {}
+  private emotion: string = 'default';
+
+  constructor(private location: Location, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     // No tocar DOM aquí
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initializeElements();
-      this.initThreeJS360();
-      this.startCamera().then(() => {
-        this.initMediaPipe();
-        this.processFrame();
-      }).catch(err => {
-        console.error('Error al inicializar la cámara:', err);
-      });
-    }, 100);
+    this.route.queryParams.subscribe(params => {
+      const emotionParam = params['emotion'];
+      const valid = ['tristeza', 'ansiedad', 'estres', 'default'];
+      if (emotionParam && valid.includes(emotionParam)) {
+        this.emotion = emotionParam;
+      } else {
+        this.emotion = 'default';
+      }
+      setTimeout(() => {
+        this.initializeElements();
+        this.initThreeJS360();
+        this.startCamera().then(() => {
+          this.initMediaPipe();
+          this.processFrame();
+        }).catch(err => {
+          console.error('Error al inicializar la cámara:', err);
+        });
+      }, 100);
+    });
   }
 
   private initializeElements(): void {
@@ -74,9 +86,7 @@ export class ArViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.canvas.style.pointerEvents = 'none';
 
     // Configurar audio (ruta recomendada en Angular)
-    if (!this.audio.src) {
-      this.audio.src = '/audio/Ansiedad1.mp3';
-    }
+    this.audio.src = this.getAudioForEmotion();
     this.audio.loop = true;
     this.audio.preload = 'auto';
 
@@ -133,7 +143,7 @@ export class ArViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     geometry.scale(-1, 1, 1);
 
     const loader = new THREE.TextureLoader();
-    const imageUrl = '/imagenes/img1.jpg'; // ¡importante! usar assets/...
+    const imageUrl = this.getImageForEmotion();
 
     loader.load(
       imageUrl,
@@ -149,6 +159,32 @@ export class ArViewerComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error('Error cargando textura 360°:', error);
       }
     );
+  }
+
+  private getAudioForEmotion(): string {
+    switch (this.emotion) {
+      case 'tristeza':
+        return '/audio/depresion1.mp3';
+      case 'estres':
+        return '/audio/Estres2.mp3';
+      case 'ansiedad':
+        return '/audio/Ansiedad1.mp3';
+      default:
+        return '/audio/Ansiedad1.mp3';
+    }
+  }
+
+  private getImageForEmotion(): string {
+    switch (this.emotion) {
+      case 'tristeza':
+        return '/imagenes/depresion.png';
+      case 'estres':
+        return '/imagenes/Estres.jpg';
+      case 'ansiedad':
+        return '/imagenes/Ansiedad.jpg';
+      default:
+        return '/imagenes/Ansiedad.jpg';
+    }
   }
 
   private addInteractionControls(): void {
