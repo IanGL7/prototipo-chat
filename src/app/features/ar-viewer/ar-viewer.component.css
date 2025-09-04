@@ -3,14 +3,44 @@
   margin-top: 20px;
 }
 
-.forest-filter {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/imagenes/Ansiedad.jpg'); /* Asegúrate de que la ruta sea correcta */
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
+/* Asegurar que el canvas mantenga la proporción correcta */
+#canvas {
+  object-fit: cover;
+}
+
+/* Optimizaciones para el viewer 360 */
+#viewer360 {
+  background-color: #000;
+}
+
+/* Ocultar controles de MediaPipe si aparecen */
+.selfie-segmentation-control-panel {
+  display: none !important;
+}
+
+/* Animación suave para el botón */
+button {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
+/* Prevenir selección de texto en el canvas */
+#canvas {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

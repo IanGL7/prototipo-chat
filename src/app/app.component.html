@@ -1,2 +1,27 @@
 
+
 <router-outlet /> <ngx-sonner-toaster />
+<!-- Header global con logo y avatar -->
+<header class="app-header">
+  <div class="app-header__left">
+    <img src="imagenes/l1.svg" alt="Emonical" class="logo" />
+    <span class="brand">Emonical</span>
+  </div>
+
+  <div class="app-header__right">
+    <img
+      src="/imagenes/Emonical_good.png"
+      alt="Avatar"
+      class="avatar"
+      referrerpolicy="no-referrer"
+    />
+  </div>
+</header>
+
+<!-- Contenido de la app -->
+<main class="app-main">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Toaster (puede ir al final del body del shell) -->
+<ngx-sonner-toaster></ngx-sonner-toaster>

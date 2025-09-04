@@ -12,13 +12,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideFirebaseApp(() =>
       initializeApp({
-        projectId: 'chatarmony',
-        appId: '1:895410760362:web:749b67410fb6a15699fed3',
-        storageBucket: 'chatarmony.appspot.com',
-        apiKey: 'AIzaSyB_kzeoeM_D1k9ABS1qQmc-1RfFYKPB9h0',
-        authDomain: 'chatarmony.firebaseapp.com',
-        messagingSenderId: '895410760362',
-        measurementId: 'G-L9ZHKJYCG4',
+        apiKey: "AIzaSyAzeVIIPJkxcuuavZHpCKu2uMPmkPw7nb0",
+  authDomain: "emonical-54299.firebaseapp.com",
+  projectId: "emonical-54299",
+  storageBucket: "emonical-54299.firebasestorage.app",
+  messagingSenderId: "305428973717",
+  appId: "1:305428973717:web:08a52b84b3bb3fd7a4339c"
       })
     ),
     provideAuth(() => getAuth()),

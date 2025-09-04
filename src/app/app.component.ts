@@ -8,7 +8,7 @@ import { AuthStateService } from './shared/data-access/auth-state.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgxSonnerToaster, AccessibilityMenuComponent],
+  imports: [RouterOutlet, NgxSonnerToaster],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

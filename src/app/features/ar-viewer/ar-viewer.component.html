@@ -1,16 +1,24 @@
 <div class="relative w-screen h-screen overflow-hidden bg-black">
-    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/imagenes/Ansiedad.jpg'); z-index: 0;"></div>
-    <canvas id="canvas" class="absolute inset-0 w-full h-full z-10"></canvas>
-    <video id="video" autoplay playsinline class="absolute inset-0 w-full h-full object-cover invisible"></video>
-    <audio id="backgroundAudio" loop>
-        <source src="/audio/Ansiedad1.mp3" type="audio/mp3">
-        Tu navegador no soporta el elemento de audio.
-    </audio>
-    
-    <!-- Botón para regresar -->
-    <button (click)="goBack()" class="absolute top-4 left-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md z-20">
-        Regresar
-    </button>
+  <!-- Visor 360: Three.js inyecta su canvas aquí -->
+  <div id="viewer360" class="absolute inset-0 z-0"></div>
 
-    
+  <!-- Persona segmentada encima -->
+  <canvas id="canvas" class="absolute inset-0 w-full h-full z-10"></canvas>
+
+  <!-- Cámara (oculta) -->
+  <video id="video" autoplay playsinline muted class="invisible absolute inset-0 w-full h-full object-cover"></video>
+
+  <!-- Audio de fondo -->
+  <audio id="backgroundAudio" preload="auto" playsinline>
+    <source src="assets/audio/Ansiedad1.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- Botón para activar sonido (sin *ngIf para evitar CommonModule) -->
+ 
+
+  <!-- Botón regresar -->
+  <button (click)="goBack()"
+          class="absolute top-4 left-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md z-20">
+    Regresar
+  </button>
 </div>
