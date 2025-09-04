@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro Ansiedad</title>
+    <!-- Importar MediaPipe para segmentación -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 390px;
+            aspect-ratio: 9/16;
+            background-color: #000;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        #video {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            visibility: hidden;
+        }
+
+        #canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .forest-filter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('imagenes/Ansiedad.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        .circles {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .circle.active {
+            border: 2px solid #4CAF50;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="forest-filter"></div>
+        <canvas id="canvas"></canvas>
+        <video id="video" autoplay playsinline></video>
+        <audio id="backgroundAudio" loop>
+            <source src="audio/Ansiedad1.mp3" type="audio/mp3">
+            Tu navegador no soporta el elemento de audio.
+        </audio>
+        <div class="circles">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle active"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+    <script>
+       document.addEventListener('DOMContentLoaded', async () => {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const audioElement = document.getElementById('backgroundAudio');
+
+            // Configurar el tamaño del canvas
+            function setupCanvas() {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+            }
+
+            // Iniciar la cámara y el audio
+            async function startCamera() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'user',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        }
+                    });
+                    video.srcObject = stream;
+                    await video.play();
+                    setupCanvas();
+                    
+                    // Reproducir el audio cuando la cámara esté lista
+                    try {
+                        await audioElement.play();
+                    } catch (audioErr) {
+                        console.error('Error al reproducir el audio:', audioErr);
+                    }
+                } catch (err) {
+                    console.error('Error al acceder a la cámara:', err);
+                }
+            }
+
+            // Inicializar MediaPipe Selfie Segmentation
+            const selfieSegmentation = new SelfieSegmentation({locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+            }});
+
+            selfieSegmentation.setOptions({
+                modelSelection: 1,
+            });
+
+            selfieSegmentation.onResults((results) => {
+                ctx.save();
+                
+                // Limpiar el canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Dibujar solo la persona (máscara de segmentación)
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+                
+                // Usar la máscara de segmentación para recortar el fondo
+                ctx.globalCompositeOperation = 'destination-in';
+                ctx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
+                
+                ctx.restore();
+            });
+
+            // Procesar cada frame
+            async function processFrame() {
+                if (video.videoWidth > 0) {
+                    await selfieSegmentation.send({image: video});
+                }
+                requestAnimationFrame(processFrame);
+            }
+
+            // Iniciar todo
+            await startCamera();
+            processFrame();
+
+            // Cleanup
+            window.addEventListener('beforeunload', () => {
+                if (video.srcObject) {
+                    const tracks = video.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+            });
+        });
+    </script>
+</body>
+</html>

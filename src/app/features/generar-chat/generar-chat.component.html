@@ -1,0 +1,43 @@
+<div class="container chat-content main-chat-box mx-auto p-6 bg-gradient-to-br from-green-100 via-purple-100 to-blue-100 rounded-lg shadow-lg max-w-2xl">
+  <h2 class="text-2xl font-semibold mb-5 text-gray-700 text-center">Nuevo chat</h2>
+
+  <!-- Menú flotante de accesibilidad -->
+  <app-accessibility-menu></app-accessibility-menu>
+  
+  <!-- Mostrar los mensajes en una lista -->
+  <div class="space-y-4">
+    <div *ngFor="let msg of messages" [ngClass]="{'text-left': msg.sender === 'bot', 'text-right': msg.sender === 'user'}">
+      <div [ngClass]="{'bg-green-200 text-green-800': msg.sender === 'bot', 'bg-gray-200 text-gray-800': msg.sender === 'user'}" 
+           class="px-4 py-2 rounded-lg shadow-sm max-w-xs mx-auto">
+        <p>{{ msg.text }}</p>
+        <p *ngIf="msg.isExercise">
+          Te recomiendo realizar el siguiente ejercicio en realidad aumentada para calmarte:
+          <a (click)="openAR(msg.exerciseName!)" class="text-blue-500 underline cursor-pointer">{{ msg.exerciseName }}</a>.
+        </p>
+        
+      </div>
+    </div>
+  </div>
+
+  
+
+
+  <!-- Campo de entrada para el mensaje del usuario -->
+  <form #f="ngForm" (ngSubmit)="onSubmit()" novalidate class="flex items-center gap-2 mt-5">
+    <input 
+      type="text" 
+      name="prompt" 
+      id="prompt" 
+      [(ngModel)]="prompt" 
+      required 
+      class="flex-grow form-input border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      placeholder="Escribe aquí tu mensaje"
+    >
+    <button 
+      class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:opacity-50" 
+      type="submit" 
+      [disabled]="!f.valid">
+      Enviar
+    </button>
+  </form>
+</div>
