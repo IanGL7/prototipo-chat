@@ -3,10 +3,3 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-emerald-200;
-}
-
-:root {
-  color-scheme: dark light;
-}

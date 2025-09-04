@@ -24,7 +24,7 @@ interface Message {
 export class GenerarChatComponent implements OnInit {
   prompt = '';
   messages: Message[] = [
-    { sender: 'bot', text: 'Hola, soy Armony! ¿En qué puedo ayudarte?' }
+    { sender: 'bot', text: 'Hola, soy Emonical! ¿En qué puedo ayudarte?' }
   ];
 
   constructor(private generarChatService: GenerarChatService, private router: Router) {}

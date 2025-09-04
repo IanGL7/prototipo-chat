@@ -5,7 +5,7 @@ import { User } from '@angular/fire/auth';
 import { RouterModule, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-menu-lateral',
+ 
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './menu-lateral.component.html',
