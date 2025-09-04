@@ -1,65 +1,105 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-ar-viewer',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './ar-viewer.component.html',
-  styleUrls: ['./ar-viewer.component.css']
+  
+  standalone: true
 })
-export class ArViewerComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
-  exerciseName: string | null = null;
-  stream: MediaStream | null = null;
+export class ArViewerComponent implements OnInit, OnDestroy {
+  video!: HTMLVideoElement;
+  canvas!: HTMLCanvasElement;
+  ctx!: CanvasRenderingContext2D | null;
+  audioElement!: HTMLAudioElement;
+  selfieSegmentation: any;
+  isProcessing = false;
+  frameRate = 100;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private location: Location) {}
 
-  ngAfterViewInit(): void {
-    // Obtener el parámetro de la URL y cargar la experiencia de AR
-    this.route.queryParams.subscribe(params => {
-      this.exerciseName = params['exercise'];
-      this.loadARExperience(this.exerciseName);
-    });
+  ngOnInit(): void {
+    this.video = document.getElementById('video') as HTMLVideoElement;
+    this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    this.ctx = this.canvas.getContext('2d');
+    this.audioElement = document.getElementById('backgroundAudio') as HTMLAudioElement;
 
-    // Iniciar la cámara después de que la vista esté inicializada
     this.startCamera();
+    this.initMediaPipe();
+    this.processFrame();
   }
 
-  async startCamera(): Promise<void> {
+  async startCamera() {
     try {
-      // Solicita acceso a la cámara
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user', // Cambia a 'environment' para la cámara trasera
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
       });
-      
-      // Asigna el flujo de video al elemento de video
-      if (this.videoElement && this.videoElement.nativeElement) {
-        this.videoElement.nativeElement.srcObject = this.stream;
-        await this.videoElement.nativeElement.play(); // Inicia la reproducción del video
-        console.log("Cámara iniciada con éxito.");
-      } else {
-        console.error("El elemento de video no está disponible.");
+      this.video.srcObject = stream;
+      await this.video.play();
+      this.setupCanvas();
+
+      try {
+        await this.audioElement.play();
+      } catch (audioErr) {
+        console.error('Error al reproducir el audio:', audioErr);
       }
     } catch (err) {
       console.error('Error al acceder a la cámara:', err);
     }
   }
 
-  loadARExperience(exerciseName: string | null): void {
-    console.log(`Cargando experiencia AR para el ejercicio: ${exerciseName}`);
-    // Aquí puedes implementar lógica adicional para experiencias AR
+  setupCanvas() {
+    if (this.video && this.canvas) {
+      this.canvas.width = this.video.videoWidth;
+      this.canvas.height = this.video.videoHeight;
+    }
+  }
+
+  initMediaPipe() {
+    this.selfieSegmentation = new (window as any).SelfieSegmentation({
+      locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+    });
+
+    this.selfieSegmentation.setOptions({ modelSelection: 1 });
+
+    this.selfieSegmentation.onResults((results: any) => {
+      if (this.ctx && !this.isProcessing) {
+        this.isProcessing = true;
+        this.ctx.save();
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.drawImage(results.image, 0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.globalCompositeOperation = 'destination-in';
+        this.ctx.drawImage(results.segmentationMask, 0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.restore();
+        this.isProcessing = false;
+      }
+    });
+  }
+
+  async processFrame() {
+    if (this.video.videoWidth > 0 && !this.isProcessing) {
+      try {
+        await this.selfieSegmentation.send({ image: this.video });
+      } catch (error) {
+        console.error("Error al procesar el frame:", error);
+      }
+    }
+    setTimeout(() => {
+      requestAnimationFrame(this.processFrame.bind(this));
+    }, this.frameRate);
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   ngOnDestroy(): void {
-    // Detener la cámara cuando el componente se destruye
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
+    if (this.video.srcObject) {
+      const tracks = (this.video.srcObject as MediaStream).getTracks();
+      tracks.forEach(track => track.stop());
     }
+    this.audioElement.pause();
+    this.audioElement.currentTime = 0;
   }
 }

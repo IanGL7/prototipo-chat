@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable()  // Quita providedIn: 'root'
 export class GenerarChatService {
-    sprinURL = 'https://armony-backend.onrender.com/chat';
+    sprinURL = 'http://localhost:8080/chat';
     constructor(private httpClient: HttpClient) { }
 
     public getContent(prompt: string): Observable<any> {

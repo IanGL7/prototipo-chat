@@ -1,44 +1,26 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { User } from '@angular/fire/auth';
-import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu-lateral',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './menu-lateral.component.html',
   styleUrls: []
 })
-export class MenuLateralComponent implements OnInit {
-  user: User | null = null;
-  isExpanded = false; // Propiedad para controlar el estado del menú (expandido o contraído)
-  showSettings = false;
-
+export class MenuLateralComponent {
   private router = inject(Router);
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.user = user;
-    });
-  }
-
-  toggleMenu() {
-    this.isExpanded = !this.isExpanded;
-  }
-
-  toggleSettings() {
-    this.showSettings = !this.showSettings;
-  }
-
-  logout() {
-    this.authService.logout().then(() => {
-      this.router.navigateByUrl('/auth/sign-in');
-    }).catch(error => {
-      console.error('Logout failed', error);
-    });
+  async logout() {
+    try {
+      await this.authService.logout();
+      await this.router.navigateByUrl('/auth/sign-in');
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
   }
 }

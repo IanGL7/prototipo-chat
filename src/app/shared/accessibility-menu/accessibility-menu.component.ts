@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { toast } from 'ngx-sonner';
 
 @Component({
-  selector: 'app-accessibility-menu',
+  
   templateUrl: './accessibility-menu.component.html',
   styleUrls: ['./accessibility-menu.component.css'],
   standalone: true,
